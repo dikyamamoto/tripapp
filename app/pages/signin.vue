@@ -3,8 +3,8 @@
     <h2>ログイン</h2>
     <form @submit.prevent="handleLogin" class="form">
       <div class="form-group">
-        <label for="email">メールアドレス</label>
-        <input v-model="email" type="email" id="email" required />
+        <label for="displayName">ニックネーム</label>
+        <input v-model="displayName" type="text" id="displayName" placeholder="例: たろう" required />
       </div>
       <div class="form-group">
         <label for="password">パスワード</label>
@@ -21,11 +21,11 @@
 <script setup>
 import { ref } from 'vue'
 
-const email = ref('')
+const displayName = ref('')
 const password = ref('')
 
 const handleLogin = () => {
-  console.log('Login attempt:', email.value)
+  console.log('Login attempt:', displayName.value)
   // 開発検証用に強制遷移できるようにします
   navigateTo('/trips')
 }

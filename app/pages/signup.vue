@@ -4,11 +4,7 @@
     <form @submit.prevent="handleSignUp" class="form">
       <div class="form-group">
         <label for="displayName">表示名 (ニックネーム)</label>
-        <input v-model="displayName" type="text" id="displayName" required />
-      </div>
-      <div class="form-group">
-        <label for="email">メールアドレス</label>
-        <input v-model="email" type="email" id="email" required />
+        <input v-model="displayName" type="text" id="displayName" placeholder="例: たろう" required />
       </div>
       <div class="form-group">
         <label for="password">パスワード</label>
@@ -26,11 +22,10 @@
 import { ref } from 'vue'
 
 const displayName = ref('')
-const email = ref('')
 const password = ref('')
 
 const handleSignUp = () => {
-  console.log('SignUp attempt:', displayName.value, email.value)
+  console.log('SignUp attempt:', displayName.value)
   navigateTo('/trips')
 }
 </script>
