@@ -1,0 +1,1 @@
+import{a as e}from"./DzUg-W1e.js";var t=()=>e().$supabase.client;export{t};
