@@ -16,10 +16,6 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase'
   ],
   supabase: {
-    redirectOptions: {
-      login: '/signin',
-      callback: '/confirm',
-      exclude: ['/', '/signup'], // 未ログインでもアクセス可能なパス
-    }
+    redirect: false
   }
 })
