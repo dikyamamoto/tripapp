@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false, // SPAモード
   app: {
-    baseURL: process.env.NODE_ENV === 'production' ? '/tripapp/' : '/'
+    baseURL: '/tripapp/'
   },
   devServer: {
     port: 3001
