@@ -3,6 +3,9 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   ssr: false, // SPAモード
+  app: {
+    baseURL: process.env.NODE_ENV === 'production' ? '/tripapp/' : '/'
+  },
   devServer: {
     port: 3001
   },
