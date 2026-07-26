@@ -249,8 +249,9 @@
               <small class="help-text">※時間を決めない場合は「指定なし」のまま登録できます</small>
             </div>
             <div class="form-group">
-              <label>Googleマップ URL (任意)</label>
-              <input v-model="newEventMapUrl" type="url" placeholder="例: https://maps.app.goo.gl/..." />
+              <label>Googleマップ URL または 場所名 (任意)</label>
+              <input v-model="newEventMapUrl" type="text" placeholder="例: https://maps.app.goo.gl/... または 東京タワー" />
+              <small class="help-text">※Googleマップの共有リンク、または「東京タワー」等の場所名を入力できます</small>
             </div>
             <div class="form-group">
               <label>WEB URL (任意)</label>
@@ -296,8 +297,9 @@
               </div>
             </div>
             <div class="form-group">
-              <label>Googleマップ URL (任意)</label>
-              <input v-model="editEventMapUrl" type="url" placeholder="例: https://maps.app.goo.gl/..." />
+              <label>Googleマップ URL または 場所名 (任意)</label>
+              <input v-model="editEventMapUrl" type="text" placeholder="例: https://maps.app.goo.gl/... または 東京タワー" />
+              <small class="help-text">※Googleマップの共有リンク、または「東京タワー」等の場所名を入力できます</small>
             </div>
             <div class="form-group">
               <label>WEB URL (任意)</label>
@@ -432,31 +434,61 @@ const filteredEvents = computed(() => {
 })
 
 // 場所データ（MapURL・WebURL）のパースと結合
+const getNormalizedMapUrl = (raw) => {
+  if (!raw) return ''
+  const trimmed = raw.trim()
+  if (!trimmed) return ''
+
+  // すでに http:// または https:// で始まっている場合
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed
+  }
+
+  // maps.google.com や maps.app.goo.gl などのドメインで始まる場合
+  if (/^(www\.|maps\.|goo\.gl|google\.com|google\.co\.jp)/i.test(trimmed)) {
+    return `https://${trimmed}`
+  }
+
+  // URLではなく場所の名前（例：「東京タワー」など）の場合はGoogleマップ検索URLに変換
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(trimmed)}`
+}
+
+const getNormalizedWebUrl = (raw) => {
+  if (!raw) return ''
+  const trimmed = raw.trim()
+  if (!trimmed) return ''
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed
+  }
+  return `https://${trimmed}`
+}
+
 const parseLocationData = (locStr) => {
   if (!locStr) return { mapUrl: '', webUrl: '' }
   
   if (locStr.includes(':::')) {
     const parts = locStr.split(':::')
     return {
-      mapUrl: parts[0] || '',
-      webUrl: parts[1] || ''
+      mapUrl: getNormalizedMapUrl(parts[0]),
+      webUrl: getNormalizedWebUrl(parts[1])
     }
   }
 
   // 互換性フォールバック（旧データのURL単体判定）
   if (/^https?:\/\//i.test(locStr)) {
     if (locStr.includes('google.com') || locStr.includes('goo.gl') || locStr.includes('maps')) {
-      return { mapUrl: locStr, webUrl: '' }
+      return { mapUrl: getNormalizedMapUrl(locStr), webUrl: '' }
     }
-    return { mapUrl: '', webUrl: locStr }
+    return { mapUrl: '', webUrl: getNormalizedWebUrl(locStr) }
   }
 
-  return { mapUrl: '', webUrl: '' }
+  // それ以外（場所の名前テキストのみ等）の場合
+  return { mapUrl: getNormalizedMapUrl(locStr), webUrl: '' }
 }
 
 const formatLocationData = (mapUrl, webUrl) => {
-  const cleanMap = (mapUrl || '').trim()
-  const cleanWeb = (webUrl || '').trim()
+  const cleanMap = getNormalizedMapUrl(mapUrl)
+  const cleanWeb = getNormalizedWebUrl(webUrl)
   
   if (!cleanMap && !cleanWeb) return ''
   return `${cleanMap}:::${cleanWeb}`
@@ -1482,19 +1514,50 @@ const goBack = () => {
 }
 
 .modal-footer {
-  padding: 16px 24px;
+  padding: 16px 20px;
   background: #f8fafc;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
+  border-top: 1px solid #f1f5f9;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
 }
 
-.btn-outline {
-  background: transparent;
-  color: #64748b;
-  border: none;
-  font-weight: 600;
+.modal-footer .btn {
+  flex: 1;
+  padding: 14px 18px;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-footer .btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+}
+
+.modal-footer .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.45);
+}
+
+.modal-footer .btn-outline {
+  background: #ffffff;
+  color: #64748b;
+  border: 1.5px solid #cbd5e1;
+}
+
+.modal-footer .btn-outline:hover {
+  background: #f1f5f9;
+  color: #334155;
 }
 
 .error-msg {
