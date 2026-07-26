@@ -524,16 +524,40 @@ const closeJoinModal = () => {
 }
 
 .modal-footer {
-  padding: 16px 24px;
+  padding: 16px 20px;
   background: #f8fafc;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
+  border-top: 1px solid #f1f5f9;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
 }
 
-.btn-outline {
-  background: transparent;
+.modal-footer .btn {
+  flex: 1;
+  padding: 14px 16px;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-footer .btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+}
+
+.modal-footer .btn-outline {
+  background: #ffffff;
   color: #64748b;
+  border: 1.5px solid #cbd5e1;
 }
 
 .error-msg {
