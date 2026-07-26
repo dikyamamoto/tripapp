@@ -80,7 +80,7 @@
                       v-if="parseLocationData(event.location).mapUrl"
                       :href="parseLocationData(event.location).mapUrl"
                       target="_blank"
-                      rel="noopener noreferrer"
+                      rel="noopener"
                       class="location-link map-link"
                       @click.stop
                       title="Googleマップを開く"
@@ -91,7 +91,7 @@
                       v-if="parseLocationData(event.location).webUrl"
                       :href="parseLocationData(event.location).webUrl"
                       target="_blank"
-                      rel="noopener noreferrer"
+                      rel="noopener"
                       class="location-link web-link"
                       @click.stop
                       title="WEBサイトを開く"
