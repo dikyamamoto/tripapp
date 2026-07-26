@@ -122,9 +122,14 @@
             </div>
             <div class="divider"></div>
             <div class="summary-box">
-              <span class="label">あなたの収支</span>
-              <span :class="['value', myBalance >= 0 ? 'plus' : 'minus']">
-                {{ myBalance >= 0 ? '+' : '' }}{{ myBalance.toLocaleString() }} <small>円</small>
+              <span class="label">
+                あなたの収支
+                <small v-if="myBalance > 0" class="sub-label">(受け取る額)</small>
+                <small v-else-if="myBalance < 0" class="sub-label">(支払う額)</small>
+                <small v-else class="sub-label">(貸し借りなし)</small>
+              </span>
+              <span :class="['value', myBalance > 0 ? 'plus' : (myBalance < 0 ? 'minus' : '')]">
+                {{ myBalance > 0 ? '+' : '' }}{{ myBalance.toLocaleString() }} <small>円</small>
               </span>
             </div>
           </div>
@@ -392,10 +397,15 @@ const showAddExpense = ref(false)
 const showSettlement = ref(false)
 const modalError = ref('')
 
+const currentUserId = ref('')
+
 onMounted(async () => {
   await fetchAllTripData()
   setupRealtime()
   const { data: { user: currentUser } } = await supabase.auth.getUser()
+  if (currentUser) {
+    currentUserId.value = currentUser.id
+  }
   if (members.value.length > 0) {
     if (currentUser && members.value.some(m => m.id === currentUser.id)) {
       newExpPayerId.value = currentUser.id
@@ -697,7 +707,10 @@ const netBalances = computed(() => {
 })
 
 const myBalance = computed(() => {
-  return 0
+  if (!currentUserId.value || !netBalances.value[currentUserId.value]) {
+    return 0
+  }
+  return Math.round(netBalances.value[currentUserId.value].balance)
 })
 
 // 送金最小化アルゴリズム
@@ -1184,22 +1197,41 @@ const goBack = () => {
 
 .btn-flex {
   flex: 1;
-  padding: 12px;
-  border-radius: 12px;
-  font-weight: 700;
+  padding: 14px 16px;
+  font-size: 1rem;
+  font-weight: 800;
+  border-radius: 14px;
   border: none;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-  color: white;
+.btn-flex:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
-.btn-secondary {
-  background: #ffffff;
-  color: #334155;
-  border: 1px solid #cbd5e1;
+.sub-label {
+  display: block;
+  font-size: 0.72rem;
+  opacity: 0.9;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .expense-toolbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .btn-flex {
+    width: 100%;
+  }
 }
 
 /* 送金ルート */
